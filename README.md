@@ -1,9 +1,11 @@
 # :floppy_disk: floppy
 File System Abstraction Layer for ABAP
 
-## Features
+:warning: Work In Progress
 
-- Frontend and backend files
+## Goals
+
+- Frontend and backend files with a common API
 - Streaming (backend only)
 - Binary / Text access
 - For text
