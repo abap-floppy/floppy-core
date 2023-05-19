@@ -11,7 +11,4 @@ FUNCTION z_floppy_call_file_browser.
     main = NEW #( ).
     main->run( ).
   ENDIF.
-
-
-
 ENDFUNCTION.

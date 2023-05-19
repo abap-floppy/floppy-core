@@ -4,13 +4,13 @@ CLASS zfloppy_file_system_exception DEFINITION
   CREATE PUBLIC.
 
   PUBLIC SECTION.
-    METHODS:
-      constructor IMPORTING textid   LIKE if_t100_message=>t100key OPTIONAL
-                            previous LIKE previous OPTIONAL.
+    METHODS constructor IMPORTING textid    LIKE if_t100_message=>t100key OPTIONAL
+                                  !previous LIKE previous                 OPTIONAL.
+
   PROTECTED SECTION.
+
   PRIVATE SECTION.
 ENDCLASS.
-
 
 
 CLASS zfloppy_file_system_exception IMPLEMENTATION.

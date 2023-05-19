@@ -4,20 +4,16 @@ CLASS zfloppy_enum_validator DEFINITION
   CREATE PUBLIC.
 
   PUBLIC SECTION.
-    CLASS-METHODS:
-      is_value_in_constant IMPORTING value         TYPE data
-                                     constant      TYPE data
-                           RETURNING VALUE(result) TYPE abap_bool
-                           RAISING   zfloppy_illegal_argument.
-  PROTECTED SECTION.
-  PRIVATE SECTION.
+    CLASS-METHODS is_value_in_constant IMPORTING !value        TYPE data
+                                                 constant      TYPE data
+                                       RETURNING VALUE(result) TYPE abap_bool
+                                       RAISING   zfloppy_illegal_argument.
 ENDCLASS.
-
 
 
 CLASS zfloppy_enum_validator IMPLEMENTATION.
   METHOD is_value_in_constant.
-    CONSTANTS: type_flat_structure TYPE c LENGTH 1 VALUE 'u'.
+    CONSTANTS type_flat_structure TYPE c LENGTH 1 VALUE 'u'.
 
     ##TODO. " Remove
 

@@ -1,4 +1,4 @@
-"! <p class="shorttext synchronized" lang="en">Floppy Exception Base Class</p>
+"! <p class="shorttext synchronized">Floppy Exception Base Class</p>
 CLASS zfloppy_exception DEFINITION
   PUBLIC
   INHERITING FROM cx_static_check
@@ -6,16 +6,16 @@ CLASS zfloppy_exception DEFINITION
   CREATE PUBLIC.
 
   PUBLIC SECTION.
-    INTERFACES:
-      if_t100_dyn_msg,
-      if_t100_message.
-    METHODS:
-      constructor IMPORTING textid   LIKE if_t100_message=>t100key OPTIONAL
-                            previous LIKE previous OPTIONAL.
+    INTERFACES if_t100_dyn_msg.
+    INTERFACES if_t100_message.
+
+    METHODS constructor IMPORTING textid    LIKE if_t100_message=>t100key OPTIONAL
+                                  !previous LIKE previous                 OPTIONAL.
+
   PROTECTED SECTION.
+
   PRIVATE SECTION.
 ENDCLASS.
-
 
 
 CLASS zfloppy_exception IMPLEMENTATION.

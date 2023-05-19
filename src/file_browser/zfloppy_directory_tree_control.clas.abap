@@ -1,4 +1,4 @@
-"! <p class="shorttext synchronized" lang="en">Directory Tree Control</p>
+"! <p class="shorttext synchronized">Directory Tree Control</p>
 "!
 "! <p>This is a control to display a path to a directory in a Tree ALV. The initial node tree is created based on
 "! the starting directory. Subdirectories are added by accessing the file system. On navigation in the tree other nodes
@@ -14,42 +14,44 @@ CLASS zfloppy_directory_tree_control DEFINITION
   CREATE PUBLIC.
 
   PUBLIC SECTION.
-    EVENTS:
-      change_directory_requested EXPORTING VALUE(directory) TYPE REF TO zfloppy_path.
-    METHODS:
-      constructor IMPORTING parent      TYPE REF TO cl_gui_container
-                            file_system TYPE REF TO zfloppy_file_system
-                            directory   TYPE REF TO zfloppy_path,
-      display RAISING zfloppy_control_exception,
-      refresh IMPORTING full_rebuild TYPE abap_bool DEFAULT abap_false
-              RAISING   zfloppy_control_exception,
-      get_current_directory RETURNING VALUE(result) TYPE REF TO zfloppy_path,
-      set_current_directory IMPORTING directory TYPE REF TO zfloppy_path,
-      free.
-  PROTECTED SECTION.
-  PRIVATE SECTION.
-    DATA:
-      parent              TYPE REF TO cl_gui_container,
-      file_system         TYPE REF TO zfloppy_file_system,
-      current_directory   TYPE REF TO zfloppy_path,
-      directory_hierarchy TYPE STANDARD TABLE OF zfloppy_directory_tree_out,
-      tree                TYPE REF TO cl_salv_tree,
-      root_node           TYPE REF TO cl_salv_node.
-    METHODS:
-      refresh_tree_nodes IMPORTING full_rebuild TYPE abap_bool DEFAULT abap_false
-                         RAISING   cx_salv_error,
-      get_children_of_node IMPORTING node                 TYPE REF TO cl_salv_node
-                                     only_direct_children TYPE abap_bool DEFAULT abap_true
-                           RETURNING VALUE(result)        TYPE salv_t_nodes,
-      on_expand_empty_folder FOR EVENT expand_empty_folder OF if_salv_events_tree IMPORTING node_key,
-      on_double_click FOR EVENT double_click OF if_salv_events_tree IMPORTING node_key.
-ENDCLASS.
+    EVENTS change_directory_requested EXPORTING VALUE(directory) TYPE REF TO zfloppy_path.
 
+    METHODS constructor IMPORTING !parent     TYPE REF TO cl_gui_container
+                                  file_system TYPE REF TO zfloppy_file_system
+                                  !directory  TYPE REF TO zfloppy_path.
+
+    METHODS display RAISING zfloppy_control_exception.
+
+    METHODS refresh IMPORTING full_rebuild TYPE abap_bool DEFAULT abap_false
+                    RAISING   zfloppy_control_exception.
+
+    METHODS get_current_directory RETURNING VALUE(result) TYPE REF TO zfloppy_path.
+    METHODS set_current_directory IMPORTING !directory    TYPE REF TO zfloppy_path.
+    METHODS free.
+
+  PRIVATE SECTION.
+    DATA parent              TYPE REF TO cl_gui_container.
+    DATA file_system         TYPE REF TO zfloppy_file_system.
+    DATA current_directory   TYPE REF TO zfloppy_path.
+    DATA directory_hierarchy TYPE STANDARD TABLE OF zfloppy_directory_tree_out.
+    DATA tree                TYPE REF TO cl_salv_tree.
+    DATA root_node           TYPE REF TO cl_salv_node.
+
+    METHODS refresh_tree_nodes IMPORTING full_rebuild TYPE abap_bool DEFAULT abap_false
+                               RAISING   cx_salv_error.
+
+    METHODS get_children_of_node IMPORTING !node                TYPE REF TO cl_salv_node
+                                           only_direct_children TYPE abap_bool DEFAULT abap_true
+                                 RETURNING VALUE(result)        TYPE salv_t_nodes.
+
+    METHODS on_expand_empty_folder FOR EVENT expand_empty_folder OF if_salv_events_tree IMPORTING node_key.
+    METHODS on_double_click FOR EVENT double_click OF if_salv_events_tree        IMPORTING node_key.
+ENDCLASS.
 
 
 CLASS zfloppy_directory_tree_control IMPLEMENTATION.
   METHOD constructor.
-    me->parent = parent.
+    me->parent      = parent.
     me->file_system = file_system.
     current_directory = directory.
   ENDMETHOD.
@@ -60,14 +62,10 @@ CLASS zfloppy_directory_tree_control IMPLEMENTATION.
     ENDIF.
 
     TRY.
-        cl_salv_tree=>factory(
-          EXPORTING
-            r_container = parent
-            hide_header = abap_true
-          IMPORTING
-            r_salv_tree = tree
-          CHANGING
-            t_table     = directory_hierarchy ).
+        cl_salv_tree=>factory( EXPORTING r_container = parent
+                                         hide_header = abap_true
+                               IMPORTING r_salv_tree = tree
+                               CHANGING  t_table     = directory_hierarchy ).
 
         DATA(tree_settings) = tree->get_tree_settings( ).
         tree_settings->set_hierarchy_icon( CONV #( icon_folder ) ).
@@ -85,11 +83,11 @@ CLASS zfloppy_directory_tree_control IMPLEMENTATION.
       CATCH cx_salv_error INTO DATA(exception).
         zfloppy_message_helper=>set_msg_vars_for_any( exception ).
         RAISE EXCEPTION TYPE zfloppy_control_exception
-          MESSAGE ID sy-msgid
-          NUMBER sy-msgno
-          WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
-          EXPORTING
-            previous = exception.
+              MESSAGE ID sy-msgid
+              NUMBER sy-msgno
+              WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
+              EXPORTING
+                previous = exception.
     ENDTRY.
   ENDMETHOD.
 
@@ -100,11 +98,11 @@ CLASS zfloppy_directory_tree_control IMPLEMENTATION.
       CATCH cx_salv_error INTO DATA(exception).
         zfloppy_message_helper=>set_msg_vars_for_any( exception ).
         RAISE EXCEPTION TYPE zfloppy_control_exception
-          MESSAGE ID sy-msgid
-          NUMBER sy-msgno
-          WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
-          EXPORTING
-            previous = exception.
+              MESSAGE ID sy-msgid
+              NUMBER sy-msgno
+              WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
+              EXPORTING
+                previous = exception.
     ENDTRY.
   ENDMETHOD.
 
@@ -123,9 +121,8 @@ CLASS zfloppy_directory_tree_control IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD refresh_tree_nodes.
-    DATA: current_node TYPE REF TO cl_salv_node,
-          children     TYPE salv_t_nodes,
-          child        TYPE REF TO salv_s_nodes.
+    DATA current_node TYPE REF TO cl_salv_node.
+    DATA child        TYPE REF TO salv_s_nodes.
 
     " Traverse the current node tree for the current path to see if it (still) matches. If nodes are missing, add them.
     " Also check the current level for new or missing directories.
@@ -158,21 +155,20 @@ CLASS zfloppy_directory_tree_control IMPLEMENTATION.
       DATA(component) = REF #( components[ current_component_index ] ).
 
       IF current_node IS NOT BOUND.
-        current_node = nodes->add_node(
-            related_node = space
-            relationship = if_salv_c_node_relation=>last_child
-            data_row     = VALUE zfloppy_directory_tree_out( directory = component->* )
-            text         = CONV #( component->* )
-            expander     = abap_true
-            folder       = abap_true ).
+        current_node = nodes->add_node( related_node = space
+                                        relationship = if_salv_c_node_relation=>last_child
+                                        data_row     = VALUE zfloppy_directory_tree_out( directory = component->* )
+                                        text         = CONV #( component->* )
+                                        expander     = abap_true
+                                        folder       = abap_true ).
         root_node = current_node.
       ENDIF.
 
       IF current_component_index = 1.
         found = abap_true.
 
-        IF CAST zfloppy_directory_tree_out( current_node->get_data_row( ) )->directory <> component->* OR
-           full_rebuild = abap_true.
+        IF    CAST zfloppy_directory_tree_out( current_node->get_data_row( ) )->directory <> component->*
+           OR full_rebuild = abap_true.
           " root is invalid, update and delete children
 
           LOOP AT get_children_of_node( current_node ) REFERENCE INTO child.
@@ -193,16 +189,15 @@ CLASS zfloppy_directory_tree_control IMPLEMENTATION.
       ENDIF.
 
       IF found = abap_false.
-        current_node = nodes->add_node(
-            related_node = current_node->get_key( )
-            relationship = if_salv_c_node_relation=>last_child
-            data_row     = VALUE zfloppy_directory_tree_out( directory = component->* )
-            text         = CONV #( component->* )
-            expander     = abap_true
-            folder       = abap_true ).
+        current_node = nodes->add_node( related_node = current_node->get_key( )
+                                        relationship = if_salv_c_node_relation=>last_child
+                                        data_row     = VALUE zfloppy_directory_tree_out( directory = component->* )
+                                        text         = CONV #( component->* )
+                                        expander     = abap_true
+                                        folder       = abap_true ).
       ENDIF.
 
-      current_component_index = current_component_index + 1.
+      current_component_index += 1.
     ENDWHILE.
 
     selections->set_selected_nodes( VALUE #( ( key = current_node->get_key( ) node = current_node ) ) ).
@@ -262,11 +257,10 @@ CLASS zfloppy_directory_tree_control IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD on_expand_empty_folder.
-
   ENDMETHOD.
 
   METHOD on_double_click.
-    DATA: parent TYPE REF TO cl_salv_node.
+    DATA parent TYPE REF TO cl_salv_node.
 
     TRY.
         DATA(node) = tree->get_nodes( )->get_node( node_key ).
@@ -292,10 +286,10 @@ CLASS zfloppy_directory_tree_control IMPLEMENTATION.
                               path      = path
                               path_kind = zfloppy_path_kind_enum=>from_separator( file_system->get_separator( ) ) ).
         RAISE EVENT change_directory_requested
-          EXPORTING
-            directory = directory.
+              EXPORTING
+                directory = directory.
       CATCH cx_salv_error
-            zfloppy_exception INTO DATA(exception).
+            zfloppy_exception INTO DATA(exception). " TODO: variable is assigned but never used (ABAP cleaner)
 
     ENDTRY.
   ENDMETHOD.

@@ -5,16 +5,16 @@ CLASS zfloppy_dataset_api_exception DEFINITION
   CREATE PUBLIC.
 
   PUBLIC SECTION.
-    METHODS:
-      constructor IMPORTING textid      LIKE if_t100_message=>t100key OPTIONAL
-                            previous    LIKE previous OPTIONAL
-                            return_code TYPE syst_subrc OPTIONAL.
-    DATA:
-      return_code TYPE syst_subrc READ-ONLY.
+    METHODS constructor IMPORTING textid      LIKE if_t100_message=>t100key OPTIONAL
+                                  !previous   LIKE previous                 OPTIONAL
+                                  return_code TYPE syst_subrc               OPTIONAL.
+
+    DATA return_code TYPE syst_subrc READ-ONLY.
+
   PROTECTED SECTION.
+
   PRIVATE SECTION.
 ENDCLASS.
-
 
 
 CLASS zfloppy_dataset_api_exception IMPLEMENTATION.

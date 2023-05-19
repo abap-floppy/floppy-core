@@ -4,19 +4,16 @@ CLASS zfloppy_tdc_file_system DEFINITION
   CREATE PUBLIC.
 
   PUBLIC SECTION.
-    INTERFACES:
-      zfloppy_file_system.
-  PROTECTED SECTION.
-  PRIVATE SECTION.
-    CONSTANTS:
-      tdc_name TYPE etobj_name VALUE 'ZFLOPPY_FILES'.
-    DATA:
-      container TYPE REF TO cl_apl_ecatt_tdc_api.
-    METHODS:
-      get_container RETURNING VALUE(result) TYPE REF TO cl_apl_ecatt_tdc_api
-                    RAISING   zfloppy_file_system_exception.
-ENDCLASS.
+    INTERFACES zfloppy_file_system.
 
+  PRIVATE SECTION.
+    CONSTANTS tdc_name TYPE etobj_name VALUE 'ZFLOPPY_FILES'.
+
+    DATA container TYPE REF TO cl_apl_ecatt_tdc_api.
+
+    METHODS get_container RETURNING VALUE(result) TYPE REF TO cl_apl_ecatt_tdc_api
+                          RAISING   zfloppy_file_system_exception.
+ENDCLASS.
 
 
 CLASS zfloppy_tdc_file_system IMPLEMENTATION.
@@ -35,16 +32,15 @@ CLASS zfloppy_tdc_file_system IMPLEMENTATION.
       CATCH cx_ecatt_tdc_access INTO DATA(exception).
         cl_message_helper=>set_msg_vars_for_any( exception ).
         RAISE EXCEPTION TYPE zfloppy_file_system_exception
-          MESSAGE ID sy-msgid
-          NUMBER sy-msgno
-          WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
-          EXPORTING
-            previous = exception.
+              MESSAGE ID sy-msgid
+              NUMBER sy-msgno
+              WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
+              EXPORTING
+                previous = exception.
     ENDTRY.
   ENDMETHOD.
 
   METHOD zfloppy_file_system~get_connection_info.
-
   ENDMETHOD.
 
   METHOD zfloppy_file_system~get_default_codepage.
@@ -61,16 +57,16 @@ CLASS zfloppy_tdc_file_system IMPLEMENTATION.
     ENDIF.
 
     TRY.
-        result = VALUE #( FOR v IN get_container( )->get_variant_list( ) (
-            filename = v ) ).
+        result = VALUE #( FOR v IN get_container( )->get_variant_list( )
+                          ( filename = v ) ).
       CATCH cx_ecatt_tdc_access INTO DATA(exception).
         cl_message_helper=>set_msg_vars_for_any( exception ).
         RAISE EXCEPTION TYPE zfloppy_file_system_exception
-          MESSAGE ID sy-msgid
-          NUMBER sy-msgno
-          WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
-          EXPORTING
-            previous = exception.
+              MESSAGE ID sy-msgid
+              NUMBER sy-msgno
+              WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
+              EXPORTING
+                previous = exception.
     ENDTRY.
   ENDMETHOD.
 
@@ -79,11 +75,10 @@ CLASS zfloppy_tdc_file_system IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD zfloppy_file_system~read_file_bin.
-
   ENDMETHOD.
 
   METHOD zfloppy_file_system~read_file_text.
-    FIELD-SYMBOLS: <csequence> TYPE csequence.
+    FIELD-SYMBOLS <csequence> TYPE csequence.
 
     DATA(mutable_path) = path.
 
@@ -110,11 +105,11 @@ CLASS zfloppy_tdc_file_system IMPLEMENTATION.
         CATCH cx_ecatt_tdc_access INTO DATA(exception).
           cl_message_helper=>set_msg_vars_for_any( exception ).
           RAISE EXCEPTION TYPE zfloppy_file_system_exception
-            MESSAGE ID sy-msgid
-            NUMBER sy-msgno
-            WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
-            EXPORTING
-              previous = exception.
+                MESSAGE ID sy-msgid
+                NUMBER sy-msgno
+                WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
+                EXPORTING
+                  previous = exception.
       ENDTRY.
     ENDIF.
 

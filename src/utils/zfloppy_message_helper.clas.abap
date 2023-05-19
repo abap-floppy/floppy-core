@@ -4,12 +4,8 @@ CLASS zfloppy_message_helper DEFINITION
   CREATE PUBLIC.
 
   PUBLIC SECTION.
-    CLASS-METHODS:
-      set_msg_vars_for_any IMPORTING any TYPE data.
-  PROTECTED SECTION.
-  PRIVATE SECTION.
+    CLASS-METHODS set_msg_vars_for_any IMPORTING !any TYPE data.
 ENDCLASS.
-
 
 
 CLASS zfloppy_message_helper IMPLEMENTATION.
@@ -35,5 +31,4 @@ CLASS zfloppy_message_helper IMPLEMENTATION.
         cl_message_helper=>set_msg_vars_for_clike( any ).
     ENDCASE.
   ENDMETHOD.
-
 ENDCLASS.

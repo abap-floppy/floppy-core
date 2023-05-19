@@ -2,19 +2,19 @@
 
 CLASS constant_test DEFINITION FOR TESTING RISK LEVEL HARMLESS DURATION SHORT.
   PUBLIC SECTION.
-    METHODS:
-      standard FOR TESTING.
+    METHODS standard FOR TESTING.
+
   PRIVATE SECTION.
-    DATA:
-      constant TYPE REF TO data,
-      value    TYPE REF TO data,
-      result   TYPE abap_bool.
-    METHODS:
-      given_the_constant IMPORTING constant TYPE data,
-      given_the_value IMPORTING value TYPE data,
-      when_is_val_in_const_is_called,
-      then_result_should_be IMPORTING result TYPE abap_bool.
+    DATA constant TYPE REF TO data.
+    DATA value    TYPE REF TO data.
+    DATA result   TYPE abap_bool.
+
+    METHODS given_the_constant    IMPORTING constant TYPE data.
+    METHODS given_the_value       IMPORTING !value   TYPE data.
+    METHODS when_is_val_in_const_is_called.
+    METHODS then_result_should_be IMPORTING !result  TYPE abap_bool.
 ENDCLASS.
+
 
 CLASS constant_test IMPLEMENTATION.
   METHOD standard.
@@ -76,14 +76,12 @@ CLASS constant_test IMPLEMENTATION.
     ASSIGN constant->* TO FIELD-SYMBOL(<constant>).
     ASSERT sy-subrc = 0.
 
-    result = zfloppy_enum_validator=>is_value_in_constant(
-        value    = <value>
-        constant = <constant> ).
+    result = zfloppy_enum_validator=>is_value_in_constant( value    = <value>
+                                                           constant = <constant> ).
   ENDMETHOD.
 
   METHOD then_result_should_be.
-    cl_abap_unit_assert=>assert_equals(
-        act = me->result
-        exp = result ).
+    cl_abap_unit_assert=>assert_equals( act = me->result
+                                        exp = result ).
   ENDMETHOD.
 ENDCLASS.

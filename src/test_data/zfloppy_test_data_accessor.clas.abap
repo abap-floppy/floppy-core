@@ -17,34 +17,35 @@ CLASS zfloppy_test_data_accessor DEFINITION
         syntax_group TYPE REF TO filesys_d,
         variant      TYPE etvar_id,
       END OF test_path.
-    CLASS-METHODS:
-      get_instance RETURNING VALUE(result) TYPE REF TO zfloppy_test_data_accessor
-                   RAISING   zfloppy_test_data_exception.
-    METHODS:
-      get_test_file_iterator RETURNING VALUE(result) TYPE REF TO zfloppy_test_data_iterator
-                             RAISING   zfloppy_test_data_exception,
-      get_test_file IMPORTING variant       TYPE etvar_id
-                    RETURNING VALUE(result) TYPE REF TO test_file
-                    RAISING   zfloppy_test_data_exception,
-      get_test_path_iterator RETURNING VALUE(result) TYPE REF TO zfloppy_test_data_iterator
-                             RAISING   zfloppy_test_data_exception,
-      get_test_path IMPORTING variant       TYPE etvar_id
-                    RETURNING VALUE(result) TYPE REF TO test_path
-                    RAISING   zfloppy_test_data_exception.
-  PROTECTED SECTION.
-  PRIVATE SECTION.
-    CONSTANTS:
-      tdc_files_name TYPE etobj_name VALUE 'ZFLOPPY_FILES',
-      tdc_paths_name TYPE etobj_name VALUE 'ZFLOPPY_PATHS'.
-    CLASS-DATA:
-      instance TYPE REF TO zfloppy_test_data_accessor.
-    DATA:
-      test_file_container TYPE REF TO cl_apl_ecatt_tdc_api,
-      test_path_container TYPE REF TO cl_apl_ecatt_tdc_api.
-    METHODS:
-      constructor RAISING zfloppy_test_data_exception.
-ENDCLASS.
 
+    CLASS-METHODS get_instance RETURNING VALUE(result) TYPE REF TO zfloppy_test_data_accessor
+                               RAISING   zfloppy_test_data_exception.
+
+    METHODS get_test_file_iterator RETURNING VALUE(result) TYPE REF TO zfloppy_test_data_iterator
+                                   RAISING   zfloppy_test_data_exception.
+
+    METHODS get_test_file IMPORTING variant       TYPE etvar_id
+                          RETURNING VALUE(result) TYPE REF TO test_file
+                          RAISING   zfloppy_test_data_exception.
+
+    METHODS get_test_path_iterator RETURNING VALUE(result) TYPE REF TO zfloppy_test_data_iterator
+                                   RAISING   zfloppy_test_data_exception.
+
+    METHODS get_test_path IMPORTING variant       TYPE etvar_id
+                          RETURNING VALUE(result) TYPE REF TO test_path
+                          RAISING   zfloppy_test_data_exception.
+
+  PRIVATE SECTION.
+    CONSTANTS tdc_files_name TYPE etobj_name VALUE 'ZFLOPPY_FILES'.
+    CONSTANTS tdc_paths_name TYPE etobj_name VALUE 'ZFLOPPY_PATHS'.
+
+    CLASS-DATA instance TYPE REF TO zfloppy_test_data_accessor.
+
+    DATA test_file_container TYPE REF TO cl_apl_ecatt_tdc_api.
+    DATA test_path_container TYPE REF TO cl_apl_ecatt_tdc_api.
+
+    METHODS constructor RAISING zfloppy_test_data_exception.
+ENDCLASS.
 
 
 CLASS zfloppy_test_data_accessor IMPLEMENTATION.
@@ -63,11 +64,11 @@ CLASS zfloppy_test_data_accessor IMPLEMENTATION.
       CATCH cx_ecatt_tdc_access INTO DATA(exception).
         cl_message_helper=>set_msg_vars_for_any( exception ).
         RAISE EXCEPTION TYPE zfloppy_test_data_exception
-          MESSAGE ID sy-msgid
-          NUMBER sy-msgno
-          WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
-          EXPORTING
-            previous = exception.
+              MESSAGE ID sy-msgid
+              NUMBER sy-msgno
+              WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
+              EXPORTING
+                previous = exception.
     ENDTRY.
   ENDMETHOD.
 
@@ -77,11 +78,11 @@ CLASS zfloppy_test_data_accessor IMPLEMENTATION.
       CATCH cx_ecatt_tdc_access INTO DATA(exception).
         cl_message_helper=>set_msg_vars_for_any( exception ).
         RAISE EXCEPTION TYPE zfloppy_test_data_exception
-          MESSAGE ID sy-msgid
-          NUMBER sy-msgno
-          WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
-          EXPORTING
-            previous = exception.
+              MESSAGE ID sy-msgid
+              NUMBER sy-msgno
+              WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
+              EXPORTING
+                previous = exception.
     ENDTRY.
   ENDMETHOD.
 
@@ -90,16 +91,16 @@ CLASS zfloppy_test_data_accessor IMPLEMENTATION.
         DATA(variant_content) = test_file_container->get_variant_content( variant ).
         CREATE DATA result.
         result->file_content ?= variant_content[ parname = 'FILE_CONTENT' ]-value_ref.
-        result->file_name ?= variant_content[ parname = 'FILE_NAME' ]-value_ref.
-        result->variant = variant.
+        result->file_name    ?= variant_content[ parname = 'FILE_NAME' ]-value_ref.
+        result->variant       = variant.
       CATCH cx_ecatt_tdc_access INTO DATA(exception).
         cl_message_helper=>set_msg_vars_for_any( exception ).
         RAISE EXCEPTION TYPE zfloppy_test_data_exception
-          MESSAGE ID sy-msgid
-          NUMBER sy-msgno
-          WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
-          EXPORTING
-            previous = exception.
+              MESSAGE ID sy-msgid
+              NUMBER sy-msgno
+              WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
+              EXPORTING
+                previous = exception.
     ENDTRY.
   ENDMETHOD.
 
@@ -109,11 +110,11 @@ CLASS zfloppy_test_data_accessor IMPLEMENTATION.
       CATCH cx_ecatt_tdc_access INTO DATA(exception).
         cl_message_helper=>set_msg_vars_for_any( exception ).
         RAISE EXCEPTION TYPE zfloppy_test_data_exception
-          MESSAGE ID sy-msgid
-          NUMBER sy-msgno
-          WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
-          EXPORTING
-            previous = exception.
+              MESSAGE ID sy-msgid
+              NUMBER sy-msgno
+              WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
+              EXPORTING
+                previous = exception.
     ENDTRY.
   ENDMETHOD.
 
@@ -121,18 +122,18 @@ CLASS zfloppy_test_data_accessor IMPLEMENTATION.
     TRY.
         DATA(variant_content) = test_path_container->get_variant_content( variant ).
         CREATE DATA result.
-        result->path ?= variant_content[ parname = 'PATH' ]-value_ref.
-        result->is_folder ?= variant_content[ parname = 'IS_FOLDER' ]-value_ref.
+        result->path         ?= variant_content[ parname = 'PATH' ]-value_ref.
+        result->is_folder    ?= variant_content[ parname = 'IS_FOLDER' ]-value_ref.
         result->syntax_group ?= variant_content[ parname = 'SYNTAX_GROUP' ]-value_ref.
-        result->variant = variant.
+        result->variant       = variant.
       CATCH cx_ecatt_tdc_access INTO DATA(exception).
         cl_message_helper=>set_msg_vars_for_any( exception ).
         RAISE EXCEPTION TYPE zfloppy_test_data_exception
-          MESSAGE ID sy-msgid
-          NUMBER sy-msgno
-          WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
-          EXPORTING
-            previous = exception.
+              MESSAGE ID sy-msgid
+              NUMBER sy-msgno
+              WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
+              EXPORTING
+                previous = exception.
     ENDTRY.
   ENDMETHOD.
 ENDCLASS.

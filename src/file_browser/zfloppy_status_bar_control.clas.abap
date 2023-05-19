@@ -4,21 +4,18 @@ CLASS zfloppy_status_bar_control DEFINITION
   CREATE PUBLIC.
 
   PUBLIC SECTION.
-    METHODS:
-      constructor IMPORTING parent TYPE REF TO cl_gui_container,
-      display RAISING zfloppy_control_exception,
-      refresh RAISING zfloppy_control_exception,
-      set_file_count IMPORTING count TYPE i,
-      set_directory_count IMPORTING count TYPE i.
-  PROTECTED SECTION.
-  PRIVATE SECTION.
-    DATA:
-      parent          TYPE REF TO cl_gui_container,
-      document        TYPE REF TO cl_dd_document,
-      directory_count TYPE i,
-      file_count      TYPE i.
-ENDCLASS.
+    METHODS constructor         IMPORTING !parent TYPE REF TO cl_gui_container.
+    METHODS display             RAISING   zfloppy_control_exception.
+    METHODS refresh             RAISING   zfloppy_control_exception.
+    METHODS set_file_count      IMPORTING !count  TYPE i.
+    METHODS set_directory_count IMPORTING !count  TYPE i.
 
+  PRIVATE SECTION.
+    DATA parent          TYPE REF TO cl_gui_container.
+    DATA document        TYPE REF TO cl_dd_document.
+    DATA directory_count TYPE i.
+    DATA file_count      TYPE i.
+ENDCLASS.
 
 
 CLASS zfloppy_status_bar_control IMPLEMENTATION.
@@ -42,19 +39,16 @@ CLASS zfloppy_status_bar_control IMPLEMENTATION.
         sap_fontsize = cl_dd_area=>small ).
 
     document->merge_document( ).
-    document->display_document(
-      EXPORTING
-        reuse_control      = abap_true
-        reuse_registration = abap_true
-        parent             = parent
-      EXCEPTIONS
-        html_display_error = 1
-        OTHERS             = 2 ).
+    document->display_document( EXPORTING  reuse_control      = abap_true
+                                           reuse_registration = abap_true
+                                           parent             = parent
+                                EXCEPTIONS html_display_error = 1
+                                           OTHERS             = 2 ).
     IF sy-subrc <> 0.
       RAISE EXCEPTION TYPE zfloppy_control_exception
-        MESSAGE ID sy-msgid
-        NUMBER sy-msgno
-        WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+            MESSAGE ID sy-msgid
+            NUMBER sy-msgno
+            WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
     ENDIF.
   ENDMETHOD.
 

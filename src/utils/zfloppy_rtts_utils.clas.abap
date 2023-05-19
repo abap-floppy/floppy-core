@@ -4,14 +4,10 @@ CLASS zfloppy_rtts_utils DEFINITION
   CREATE PRIVATE.
 
   PUBLIC SECTION.
-    CLASS-METHODS:
-      get_class_name_for_obj_ref IMPORTING object_reference TYPE data
-                                 RETURNING VALUE(result)    TYPE string
-                                 RAISING   zfloppy_illegal_argument.
-  PROTECTED SECTION.
-  PRIVATE SECTION.
+    CLASS-METHODS get_class_name_for_obj_ref IMPORTING object_reference TYPE data
+                                             RETURNING VALUE(result)    TYPE string
+                                             RAISING   zfloppy_illegal_argument.
 ENDCLASS.
-
 
 
 CLASS zfloppy_rtts_utils IMPLEMENTATION.
@@ -22,8 +18,7 @@ CLASS zfloppy_rtts_utils IMPLEMENTATION.
         )->get_referenced_type( ) )->get_relative_name( ).
       CATCH cx_sy_move_cast_error INTO DATA(exception).
         RAISE EXCEPTION TYPE zfloppy_illegal_argument
-          EXPORTING
-            previous = exception.
+          EXPORTING previous = exception.
     ENDTRY.
   ENDMETHOD.
 ENDCLASS.

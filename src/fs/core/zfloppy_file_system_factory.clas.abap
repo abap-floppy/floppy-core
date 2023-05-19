@@ -1,25 +1,23 @@
-"! <p class="shorttext synchronized" lang="en">File System Factory</p>
+"! <p class="shorttext synchronized">File System Factory</p>
 CLASS zfloppy_file_system_factory DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC.
 
   PUBLIC SECTION.
-    CLASS-METHODS:
-      get_fs_for_target_server IMPORTING target_server TYPE REF TO zfloppy_target_server_enum
-                               RETURNING VALUE(result) TYPE REF TO zfloppy_file_system
-                               RAISING   zfloppy_file_system_exception.
-  PROTECTED SECTION.
+    CLASS-METHODS get_fs_for_target_server IMPORTING target_server TYPE REF TO zfloppy_target_server_enum
+                                           RETURNING VALUE(result) TYPE REF TO zfloppy_file_system
+                                           RAISING   zfloppy_file_system_exception.
+
   PRIVATE SECTION.
     TYPES:
       BEGIN OF cache_line,
         target_server TYPE REF TO zfloppy_target_server_enum,
         file_system   TYPE REF TO zfloppy_file_system,
       END OF cache_line.
-    CLASS-DATA:
-      cache TYPE HASHED TABLE OF cache_line WITH UNIQUE KEY target_server.
-ENDCLASS.
 
+    CLASS-DATA cache TYPE HASHED TABLE OF cache_line WITH UNIQUE KEY target_server.
+ENDCLASS.
 
 
 CLASS zfloppy_file_system_factory IMPLEMENTATION.
@@ -41,10 +39,9 @@ CLASS zfloppy_file_system_factory IMPLEMENTATION.
       RAISE EXCEPTION NEW zfloppy_file_system_exception( ).
     ENDIF.
 
-    INSERT VALUE #(
-        target_server = target_server
-        file_system   = result
-    ) INTO TABLE cache.
+    INSERT VALUE #( target_server = target_server
+                    file_system   = result )
+           INTO TABLE cache.
     ASSERT sy-subrc = 0.
   ENDMETHOD.
 ENDCLASS.

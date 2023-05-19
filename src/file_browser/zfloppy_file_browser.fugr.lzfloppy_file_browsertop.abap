@@ -1,4 +1,4 @@
-FUNCTION-POOL zfloppy_file_browser.         "MESSAGE-ID ..
+FUNCTION-POOL zfloppy_file_browser.
 
 SELECTION-SCREEN BEGIN OF SCREEN 2000.
   PARAMETERS: p_fs  TYPE zfloppy_target_server AS LISTBOX VISIBLE LENGTH 40 OBLIGATORY,
