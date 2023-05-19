@@ -15,7 +15,8 @@ CLASS zfloppy_dataset_api_impl IMPLEMENTATION.
         DATA(return_code) = sy-subrc.
 
         IF return_code <> 0.
-          RAISE EXCEPTION NEW zfloppy_dataset_api_exception( return_code = return_code ).
+          RAISE EXCEPTION TYPE zfloppy_dataset_api_exception
+            EXPORTING return_code = return_code.
         ENDIF.
 
       CATCH cx_sy_file_close INTO DATA(exception).

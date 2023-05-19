@@ -93,7 +93,7 @@ CLASS zfloppy_backend_fs_impl IMPLEMENTATION.
                                        IMPORTING data_object = result
                                                  return_code = DATA(return_code) ).
             IF return_code <> 0.
-              RAISE EXCEPTION NEW zfloppy_backend_fs_exception( ).
+              RAISE EXCEPTION TYPE zfloppy_backend_fs_exception.
             ENDIF.
 
             open = abap_false.
@@ -134,7 +134,7 @@ CLASS zfloppy_backend_fs_impl IMPLEMENTATION.
                                        IMPORTING data_object = result
                                                  return_code = DATA(return_code) ).
             IF return_code <> 0.
-              RAISE EXCEPTION NEW zfloppy_backend_fs_exception( ).
+              RAISE EXCEPTION TYPE zfloppy_backend_fs_exception.
             ENDIF.
 
             open = abap_false.

@@ -21,7 +21,7 @@ CLASS zfloppy_enum_validator IMPLEMENTATION.
 
     DESCRIBE FIELD constant TYPE DATA(constant_type).
     IF constant_type <> type_flat_structure.
-      RAISE EXCEPTION NEW zfloppy_illegal_argument( ).
+      RAISE EXCEPTION TYPE zfloppy_illegal_argument.
     ENDIF.
 
     DO.

@@ -25,7 +25,7 @@ CLASS zfloppy_frontend_fs_impl IMPLEMENTATION.
         DATA(return_code) = frontend_services->directory_create( path ).
 
         IF return_code IS NOT INITIAL.
-          RAISE EXCEPTION NEW zfloppy_frontend_fs_exception( ).
+          RAISE EXCEPTION TYPE zfloppy_frontend_fs_exception.
         ENDIF.
 
       CATCH zfloppy_frontend_services_exc INTO DATA(exception).
@@ -44,7 +44,7 @@ CLASS zfloppy_frontend_fs_impl IMPLEMENTATION.
         DATA(return_code) = frontend_services->directory_delete( path ).
 
         IF return_code IS NOT INITIAL.
-          RAISE EXCEPTION NEW zfloppy_frontend_fs_exception( ).
+          RAISE EXCEPTION TYPE zfloppy_frontend_fs_exception.
         ENDIF.
 
       CATCH zfloppy_frontend_services_exc INTO DATA(exception).

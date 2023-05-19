@@ -47,7 +47,7 @@ CLASS zfloppy_codepage_helper IMPLEMENTATION.
     DATA(mutable_external_name) = to_lower( external_name ).
 
     IF mutable_external_name IS INITIAL.
-      RAISE EXCEPTION NEW zfloppy_codepage_exception( ).
+      RAISE EXCEPTION TYPE zfloppy_codepage_exception.
     ENDIF.
 
     DO 2 TIMES.
@@ -71,12 +71,12 @@ CLASS zfloppy_codepage_helper IMPLEMENTATION.
           CONTINUE.
 
         WHEN OTHERS.
-          RAISE EXCEPTION NEW zfloppy_codepage_exception( ).
+          RAISE EXCEPTION TYPE zfloppy_codepage_exception.
       ENDCASE.
     ENDDO.
 
     IF result IS INITIAL.
-      RAISE EXCEPTION NEW zfloppy_codepage_exception( ).
+      RAISE EXCEPTION TYPE zfloppy_codepage_exception.
     ENDIF.
   ENDMETHOD.
 
@@ -114,10 +114,10 @@ CLASS zfloppy_codepage_helper IMPLEMENTATION.
           WHEN cl_abap_file_utilities=>encoding_other.
 
           WHEN OTHERS.
-            RAISE EXCEPTION NEW zfloppy_codepage_exception( ).
+            RAISE EXCEPTION TYPE zfloppy_codepage_exception.
         ENDCASE.
       WHEN OTHERS.
-        RAISE EXCEPTION NEW zfloppy_codepage_exception( ).
+        RAISE EXCEPTION TYPE zfloppy_codepage_exception.
     ENDCASE.
   ENDMETHOD.
 ENDCLASS.

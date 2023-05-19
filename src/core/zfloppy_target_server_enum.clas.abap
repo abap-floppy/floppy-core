@@ -36,7 +36,8 @@ CLASS zfloppy_target_server_enum IMPLEMENTATION.
     TRY.
         result = enum_instances[ table_line->value = value ].
       CATCH cx_sy_itab_line_not_found INTO DATA(exception).
-        RAISE EXCEPTION NEW zfloppy_illegal_argument( previous = exception ).
+        RAISE EXCEPTION TYPE zfloppy_illegal_argument
+          EXPORTING previous = exception.
     ENDTRY.
   ENDMETHOD.
 

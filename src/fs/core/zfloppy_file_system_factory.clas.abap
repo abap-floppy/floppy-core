@@ -36,7 +36,7 @@ CLASS zfloppy_file_system_factory IMPLEMENTATION.
     ENDCASE.
 
     IF result IS NOT BOUND.
-      RAISE EXCEPTION NEW zfloppy_file_system_exception( ).
+      RAISE EXCEPTION TYPE zfloppy_file_system_exception.
     ENDIF.
 
     INSERT VALUE #( target_server = target_server
