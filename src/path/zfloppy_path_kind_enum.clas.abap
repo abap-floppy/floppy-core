@@ -18,11 +18,11 @@ CLASS zfloppy_path_kind_enum DEFINITION
 
     CLASS-METHODS from_value IMPORTING !value        TYPE zfloppy_path_kind
                              RETURNING VALUE(result) TYPE REF TO zfloppy_path_kind_enum
-                             RAISING   zfloppy_illegal_argument.
+                             RAISING   zfloppy_no_enum_match.
 
     CLASS-METHODS from_separator IMPORTING separator     TYPE path_separator
                                  RETURNING VALUE(result) TYPE REF TO zfloppy_path_kind_enum
-                                 RAISING   zfloppy_illegal_argument.
+                                 RAISING   zfloppy_no_enum_match.
 
     CLASS-METHODS get_instances RETURNING VALUE(result) TYPE instances.
 
@@ -50,20 +50,19 @@ CLASS zfloppy_path_kind_enum IMPLEMENTATION.
     TRY.
         result = enum_instances[ table_line->value = value ].
       CATCH cx_sy_itab_line_not_found INTO DATA(exception).
-        RAISE EXCEPTION TYPE zfloppy_illegal_argument
+        RAISE EXCEPTION TYPE zfloppy_no_enum_match
           EXPORTING previous = exception.
     ENDTRY.
   ENDMETHOD.
 
   METHOD from_separator.
-    " TODO: variable is assigned but never used (ABAP cleaner)
     DATA(instances) = enum_instances.
-    DELETE enum_instances WHERE table_line <> windows AND table_line <> unix.
+    DELETE instances WHERE table_line <> windows AND table_line <> unix.
 
     TRY.
         result = enum_instances[ table_line->separator = separator ].
       CATCH cx_sy_itab_line_not_found INTO DATA(exception).
-        RAISE EXCEPTION TYPE zfloppy_illegal_argument
+        RAISE EXCEPTION TYPE zfloppy_no_enum_match
           EXPORTING previous = exception.
     ENDTRY.
   ENDMETHOD.

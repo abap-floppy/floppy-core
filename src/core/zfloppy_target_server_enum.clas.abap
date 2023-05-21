@@ -15,7 +15,7 @@ CLASS zfloppy_target_server_enum DEFINITION
 
     CLASS-METHODS from_value IMPORTING !value        TYPE zfloppy_target_server
                              RETURNING VALUE(result) TYPE REF TO zfloppy_target_server_enum
-                             RAISING   zfloppy_illegal_argument.
+                             RAISING   zfloppy_no_enum_match.
 
     CLASS-METHODS get_instances RETURNING VALUE(result) TYPE instances.
 
@@ -36,7 +36,7 @@ CLASS zfloppy_target_server_enum IMPLEMENTATION.
     TRY.
         result = enum_instances[ table_line->value = value ].
       CATCH cx_sy_itab_line_not_found INTO DATA(exception).
-        RAISE EXCEPTION TYPE zfloppy_illegal_argument
+        RAISE EXCEPTION TYPE zfloppy_no_enum_match
           EXPORTING previous = exception.
     ENDTRY.
   ENDMETHOD.
