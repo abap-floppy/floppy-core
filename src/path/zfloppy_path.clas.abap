@@ -46,6 +46,11 @@ CLASS zfloppy_path DEFINITION
     CLASS-METHODS parse_path_kind_from_string IMPORTING !path         TYPE csequence
                                               RETURNING VALUE(result) TYPE REF TO zfloppy_path_kind_enum
                                               RAISING   zfloppy_path_exception.
+
+    CLASS-METHODS parse_separator_from_path
+      IMPORTING !path         TYPE csequence
+      RETURNING VALUE(result) TYPE zfloppy_path_kind_enum=>path_separator
+      RAISING   zfloppy_path_exception.
 ENDCLASS.
 
 
@@ -106,28 +111,28 @@ CLASS zfloppy_path IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD parse_path_kind_from_string.
-    DATA separator TYPE zfloppy_path_kind_enum=>path_separator.
+    TRY.
+        result = zfloppy_path_kind_enum=>from_separator( parse_separator_from_path( path ) ).
+      CATCH zfloppy_no_enum_match INTO DATA(exception).
+        RAISE EXCEPTION TYPE zfloppy_path_exception
+          EXPORTING previous = exception.
+    ENDTRY.
+  ENDMETHOD.
 
+  METHOD parse_separator_from_path.
     " Very basic determination, ideally find a method to call instead
 
     DATA(length) = strlen( path ).
 
     IF length >= 1 AND path(1) = '/'.
-      separator = path(1).
-    ELSEIF length >= 3 AND to_lower( path(1) ) CA sy-abcde AND path+1(1) = ':' AND path+2(1) = '\'.
-      separator = path(3).
+      result = path(1).
+    ELSEIF length >= 3 AND to_upper( path(1) ) CA sy-abcde AND path+1(1) = ':' AND path+2(1) = '\'.
+      result = path+2(1).
     ENDIF.
 
-    IF separator IS INITIAL.
+    IF result IS INITIAL.
       RAISE EXCEPTION TYPE zfloppy_path_exception.
     ENDIF.
-
-    TRY.
-        result = zfloppy_path_kind_enum=>from_separator( separator ).
-      CATCH zfloppy_illegal_argument INTO DATA(exception).
-        RAISE EXCEPTION TYPE zfloppy_path_exception
-          EXPORTING previous = exception.
-    ENDTRY.
   ENDMETHOD.
 
   METHOD append_path.
