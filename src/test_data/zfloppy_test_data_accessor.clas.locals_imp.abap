@@ -4,24 +4,24 @@
 
 CLASS tdc_iterator_base DEFINITION FOR TESTING ABSTRACT.
   PUBLIC SECTION.
-    INTERFACES:
-      zfloppy_test_data_iterator.
-    METHODS:
-      constructor IMPORTING container TYPE REF TO cl_apl_ecatt_tdc_api
-                            line_type TYPE REF TO if_abap_data_type_handle
-                  RAISING   cx_ecatt_tdc_access.
+    INTERFACES zfloppy_test_data_iterator.
+
+    METHODS constructor IMPORTING container TYPE REF TO cl_apl_ecatt_tdc_api
+                                  line_type TYPE REF TO if_abap_data_type_handle
+                        RAISING   cx_ecatt_tdc_access.
+
   PROTECTED SECTION.
-    METHODS:
-      map_variant_content_to_result IMPORTING variant         TYPE etvar_id
-                                              variant_content TYPE etpar_ref_tabtype
-                                    CHANGING  result          TYPE REF TO data.
+    METHODS map_variant_content_to_result IMPORTING variant         TYPE etvar_id
+                                                    variant_content TYPE etpar_ref_tabtype
+                                          CHANGING  !result         TYPE REF TO data.
+
   PRIVATE SECTION.
-    DATA:
-      container    TYPE REF TO cl_apl_ecatt_tdc_api,
-      line_type    TYPE REF TO if_abap_data_type_handle,
-      variant_list TYPE etvar_name_tabtype,
-      current      TYPE i.
+    DATA container    TYPE REF TO cl_apl_ecatt_tdc_api.
+    DATA line_type    TYPE REF TO if_abap_data_type_handle.
+    DATA variant_list TYPE etvar_name_tabtype.
+    DATA current      TYPE i.
 ENDCLASS.
+
 
 CLASS tdc_iterator_base IMPLEMENTATION.
   METHOD constructor.
@@ -44,21 +44,18 @@ CLASS tdc_iterator_base IMPLEMENTATION.
         DATA(type) = zfloppy_test_data_iterator~get_type( ).
         CREATE DATA result TYPE HANDLE type.
 
-        map_variant_content_to_result(
-          EXPORTING
-            variant         = variant
-            variant_content = variant_content
-          CHANGING
-            result          = result ).
+        map_variant_content_to_result( EXPORTING variant         = variant
+                                                 variant_content = variant_content
+                                       CHANGING  result          = result ).
 
       CATCH cx_ecatt_tdc_access INTO DATA(exception).
-        cl_message_helper=>set_msg_vars_for_any( exception ).
+        zfloppy_message_helper=>set_msg_vars_for_any( exception ).
         RAISE EXCEPTION TYPE zfloppy_test_data_exception
-          MESSAGE ID sy-msgid
-          NUMBER sy-msgno
-          WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
-          EXPORTING
-            previous = exception.
+              MESSAGE ID sy-msgid
+              NUMBER sy-msgno
+              WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4
+              EXPORTING
+                previous = exception.
     ENDTRY.
   ENDMETHOD.
 
@@ -83,7 +80,7 @@ CLASS tdc_iterator_base IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD map_variant_content_to_result.
-    FIELD-SYMBOLS: <variant> TYPE etvar_id.
+    FIELD-SYMBOLS <variant> TYPE etvar_id.
 
     ASSIGN result->* TO FIELD-SYMBOL(<result>).
     ASSERT sy-subrc = 0.
@@ -108,36 +105,36 @@ CLASS tdc_iterator_base IMPLEMENTATION.
   ENDMETHOD.
 ENDCLASS.
 
+
 CLASS test_file_iterator DEFINITION INHERITING FROM tdc_iterator_base FOR TESTING.
   PUBLIC SECTION.
-    METHODS:
-      constructor IMPORTING container TYPE REF TO cl_apl_ecatt_tdc_api
-                  RAISING   cx_ecatt_tdc_access.
+    METHODS constructor IMPORTING container TYPE REF TO cl_apl_ecatt_tdc_api
+                        RAISING   cx_ecatt_tdc_access.
 ENDCLASS.
+
 
 CLASS test_file_iterator IMPLEMENTATION.
   METHOD constructor.
-    DATA: dummy TYPE zfloppy_test_data_accessor=>test_file.
+    DATA dummy TYPE zfloppy_test_data_accessor=>test_file.
 
-    super->constructor(
-      container = container
-      line_type = CAST #( cl_abap_typedescr=>describe_by_data( dummy ) ) ).
+    super->constructor( container = container
+                        line_type = CAST #( cl_abap_typedescr=>describe_by_data( dummy ) ) ).
   ENDMETHOD.
 ENDCLASS.
 
+
 CLASS test_path_iterator DEFINITION INHERITING FROM tdc_iterator_base FOR TESTING.
   PUBLIC SECTION.
-    METHODS:
-      constructor IMPORTING container TYPE REF TO cl_apl_ecatt_tdc_api
-                  RAISING   cx_ecatt_tdc_access.
+    METHODS constructor IMPORTING container TYPE REF TO cl_apl_ecatt_tdc_api
+                        RAISING   cx_ecatt_tdc_access.
 ENDCLASS.
+
 
 CLASS test_path_iterator IMPLEMENTATION.
   METHOD constructor.
-    DATA: dummy TYPE zfloppy_test_data_accessor=>test_path.
+    DATA dummy TYPE zfloppy_test_data_accessor=>test_path.
 
-    super->constructor(
-      container = container
-      line_type = CAST #( cl_abap_typedescr=>describe_by_data( dummy ) ) ).
+    super->constructor( container = container
+                        line_type = CAST #( cl_abap_typedescr=>describe_by_data( dummy ) ) ).
   ENDMETHOD.
 ENDCLASS.
