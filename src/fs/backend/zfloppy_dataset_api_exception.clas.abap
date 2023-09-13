@@ -1,7 +1,6 @@
 CLASS zfloppy_dataset_api_exception DEFINITION
   PUBLIC
   INHERITING FROM zfloppy_exception
-  FINAL
   CREATE PUBLIC.
 
   PUBLIC SECTION.

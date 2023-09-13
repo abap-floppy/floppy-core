@@ -18,8 +18,7 @@ CLASS zfloppy_codepage_helper DEFINITION
 
     CLASS-METHODS get_system_codepage RETURNING VALUE(result) TYPE cpcodepage.
 
-    CLASS-METHODS get_utf8 RETURNING VALUE(result) TYPE cpcodepage
-                           RAISING   zfloppy_codepage_exception.
+    CLASS-METHODS get_utf8 RETURNING VALUE(result) TYPE cpcodepage.
 
     CLASS-METHODS analyze_xstring IMPORTING xstring       TYPE xstring
                                             max_kb        TYPE i DEFAULT -1
@@ -87,7 +86,13 @@ CLASS zfloppy_codepage_helper IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_utf8.
-    result = get_codepage_by_external_name( external_codepage_names-utf8 ).
+    TRY.
+        result = get_codepage_by_external_name( external_codepage_names-utf8 ).
+      CATCH zfloppy_codepage_exception INTO DATA(internal_error).
+        RAISE EXCEPTION TYPE zfloppy_internal_error
+          EXPORTING
+            previous = internal_error.
+    ENDTRY.
   ENDMETHOD.
 
   METHOD analyze_xstring.

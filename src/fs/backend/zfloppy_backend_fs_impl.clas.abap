@@ -160,51 +160,69 @@ CLASS zfloppy_backend_fs_impl IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD zfloppy_fs_partial_reader~read_file_to_buffer_bin.
-*    DATA: return_code TYPE syst_subrc.
-*
-*    TRY.
-*        dataset_api->open_dataset(
-*          EXPORTING
-*            dataset                  = path
-*            access_type              = zfloppy_dataset_api=>access_types-input
-*            mode                     = zfloppy_dataset_api=>modes-binary
-*            position                 = offset
-*          IMPORTING
-*            return_code              = return_code
-*            message                  = DATA(message) ).
-*        IF return_code <> 0.
-*          cl_message_helper=>set_msg_vars_for_clike( message ).
-*          RAISE EXCEPTION TYPE zfloppy_backend_fs_exception USING MESSAGE.
-*        ENDIF.
-*
-*        dataset_api->read_dataset(
-*          EXPORTING
-*            dataset        = path
-*            maximum_length = length
-*          IMPORTING
-*            data_object    = buffer
-*            return_code    = return_code ).
-*        IF return_code <> 0.
-*          RAISE EXCEPTION TYPE zfloppy_file_system_exception.
-*        ENDIF.
-*
-*        dataset_api->close_dataset( path ).
-*
-*      CATCH cx_sy_file_open
-*            cx_sy_codepage_converter_init
-*            cx_sy_conversion_codepage
-*            cx_sy_file_authority
-*            cx_sy_file_io
-*            cx_sy_file_open_mode
-*            cx_sy_file_close INTO DATA(exception).
-*        cl_message_helper=>set_msg_vars_for_any( exception ).
-*        RAISE EXCEPTION TYPE zfloppy_backend_fs_exception USING MESSAGE
-*          EXPORTING
-*            previous = exception.
-*    ENDTRY.
+    DATA(open) = abap_false.
+
+    TRY.
+        dataset_api->open_dataset( dataset     = path
+                                   access_type = zfloppy_dataset_api=>access_types-input
+                                   mode        = zfloppy_dataset_api=>modes-binary
+                                   position    = offset ).
+        open = abap_true.
+
+        dataset_api->read_dataset( EXPORTING dataset        = path
+                                             maximum_length = length
+                                   IMPORTING data_object    = buffer
+                                             actual_length  = actual_length ).
+
+        open = abap_false.
+        dataset_api->close_dataset( path ).
+
+      CATCH zfloppy_dataset_api_exception INTO DATA(exception).
+        IF open = abap_true.
+          TRY.
+              dataset_api->close_dataset( path ).
+            CATCH zfloppy_dataset_api_exception ##NO_HANDLER.
+          ENDTRY.
+        ENDIF.
+        cl_message_helper=>set_msg_vars_for_any( exception ).
+        RAISE EXCEPTION TYPE zfloppy_backend_fs_exception USING MESSAGE
+              EXPORTING
+                previous = exception.
+    ENDTRY.
   ENDMETHOD.
 
   METHOD zfloppy_fs_partial_reader~read_file_to_buffer_text.
+    DATA(open) = abap_false.
+
+    TRY.
+        dataset_api->open_dataset( dataset      = path
+                                   access_type  = zfloppy_dataset_api=>access_types-input
+                                   mode         = zfloppy_dataset_api=>modes-legacy_text
+                                   mode_options = VALUE #( codepage = codepage
+                                                           linefeed = zfloppy_dataset_api=>linefeeds-native )
+                                   position     = offset ).
+        open = abap_true.
+
+        dataset_api->read_dataset( EXPORTING dataset        = path
+                                             maximum_length = length
+                                   IMPORTING data_object    = buffer
+                                             actual_length  = actual_length ).
+
+        open = abap_false.
+        dataset_api->close_dataset( path ).
+
+      CATCH zfloppy_dataset_api_exception INTO DATA(exception).
+        IF open = abap_true.
+          TRY.
+              dataset_api->close_dataset( path ).
+            CATCH zfloppy_dataset_api_exception ##NO_HANDLER.
+          ENDTRY.
+        ENDIF.
+        cl_message_helper=>set_msg_vars_for_any( exception ).
+        RAISE EXCEPTION TYPE zfloppy_backend_fs_exception USING MESSAGE
+              EXPORTING
+                previous = exception.
+    ENDTRY.
   ENDMETHOD.
 
   METHOD zfloppy_fs_partial_writer~write_buffer_to_file_bin.
@@ -213,7 +231,73 @@ CLASS zfloppy_backend_fs_impl IMPLEMENTATION.
   METHOD zfloppy_fs_partial_writer~write_buffer_to_file_text.
   ENDMETHOD.
 
+  METHOD zfloppy_fs_partial_writer~append_text_to_file.
+    DATA(open) = abap_false.
+    TRY.
+        dataset_api->open_dataset( dataset      = path
+                                   access_type  = zfloppy_dataset_api=>access_types-appending
+                                   mode         = zfloppy_dataset_api=>modes-legacy_text
+                                   mode_options = VALUE #( codepage = codepage
+                                                           linefeed = zfloppy_dataset_api=>linefeeds-native ) ).
+        open = abap_true.
+        dataset_api->transfer( data_object = content
+                               dataset     = path ).
+        open = abap_false.
+        dataset_api->close_dataset( path ).
+      CATCH zfloppy_dataset_api_exception INTO DATA(exception).
+        IF open = abap_true.
+          TRY.
+              dataset_api->close_dataset( path ).
+            CATCH zfloppy_dataset_api_exception ##NO_HANDLER.
+          ENDTRY.
+        ENDIF.
+        cl_message_helper=>set_msg_vars_for_any( exception ).
+        RAISE EXCEPTION TYPE zfloppy_backend_fs_exception USING MESSAGE
+              EXPORTING
+                previous = exception.
+    ENDTRY.
+  ENDMETHOD.
+
   METHOD zfloppy_file_system~write_file_bin.
+    TRY.
+        dataset_api->open_dataset( dataset     = path
+                                   access_type = zfloppy_dataset_api=>access_types-output
+                                   mode        = zfloppy_dataset_api=>modes-binary ).
+        dataset_api->close_dataset( path ).
+      CATCH zfloppy_dataset_api_exception INTO DATA(exception).
+        cl_message_helper=>set_msg_vars_for_any( exception ).
+        RAISE EXCEPTION TYPE zfloppy_backend_fs_exception USING MESSAGE
+              EXPORTING
+                previous = exception.
+    ENDTRY.
+  ENDMETHOD.
+
+  METHOD zfloppy_file_system~write_file_text.
+    DATA(open) = abap_false.
+
+    TRY.
+        dataset_api->open_dataset( dataset      = path
+                                   access_type  = zfloppy_dataset_api=>access_types-output
+                                   mode         = zfloppy_dataset_api=>modes-legacy_text
+                                   mode_options = VALUE #( codepage = codepage
+                                                           linefeed = zfloppy_dataset_api=>linefeeds-native ) ).
+        open = abap_true.
+        dataset_api->transfer( data_object = content
+                               dataset     = path ).
+        open = abap_false.
+        dataset_api->close_dataset( path ).
+      CATCH zfloppy_dataset_api_exception INTO DATA(exception).
+        IF open = abap_true.
+          TRY.
+              dataset_api->close_dataset( path ).
+            CATCH zfloppy_dataset_api_exception ##NO_HANDLER.
+          ENDTRY.
+        ENDIF.
+        cl_message_helper=>set_msg_vars_for_any( exception ).
+        RAISE EXCEPTION TYPE zfloppy_backend_fs_exception USING MESSAGE
+              EXPORTING
+                previous = exception.
+    ENDTRY.
   ENDMETHOD.
 
   METHOD zfloppy_file_system~create_directory.
@@ -223,7 +307,8 @@ CLASS zfloppy_backend_fs_impl IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD zfloppy_file_system~get_default_codepage.
-    result = zfloppy_codepage_helper=>get_system_codepage( ).
+    " Use UTF8 instead of the system codepage as recommended by the programming guideline in the keyword documentation.
+    result = zfloppy_codepage_helper=>get_utf8( ).
   ENDMETHOD.
 
   METHOD zfloppy_file_system~get_directory_contents.

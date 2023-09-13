@@ -169,19 +169,22 @@ CLASS zfloppy_file IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD append_text.
-    ##TODO. " Ask the file system if it supports append and use that, fallback to this
-*    file_system->append_file_text
-    " TODO: variable is assigned but never used (ABAP cleaner)
-    DATA(content) = file_system->read_file_text( path     = path->path
-                                                 codepage = determine_codepage_to_use( codepage ) ).
+    DATA(supported_methods) = file_system->get_supported_methods( ).
 
-    content = content && text && |\n|.
-
-*    file_system->write_file_text(
-*
-*    ).
-*    CATCH zfloppy_fs_unsupp_operation.
-*    CATCH zfloppy_file_system_exception.
+    IF line_exists( supported_methods[
+                        table_line = zfloppy_fs_method_enum=>partial_writer-write_buffer_to_file_text ] ).
+      DATA(partial_writer) = CAST zfloppy_fs_partial_writer( file_system ).
+      partial_writer->append_text_to_file( path     = path->path
+                                           codepage = determine_codepage_to_use( codepage )
+                                           content  = text ).
+    ELSE.
+      DATA(content) = file_system->read_file_text( path     = path->path
+                                                   codepage = determine_codepage_to_use( codepage ) ).
+      content = content && text.
+      file_system->write_file_text( path     = path->path
+                                    content  = content
+                                    codepage = determine_codepage_to_use( codepage ) ).
+    ENDIF.
   ENDMETHOD.
 
   METHOD get_input_stream.

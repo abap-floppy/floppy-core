@@ -42,6 +42,12 @@ INTERFACE zfloppy_file_system PUBLIC.
                    RAISING   zfloppy_fs_unsupp_operation
                              zfloppy_file_system_exception,
 
+    write_file_text IMPORTING !path    TYPE csequence
+                              content  TYPE csequence
+                              codepage TYPE cpcodepage
+                    RAISING   zfloppy_fs_unsupp_operation
+                              zfloppy_file_system_exception,
+
     get_directory_contents IMPORTING !path         TYPE csequence
                            RETURNING VALUE(result) TYPE file_info_tab
                            RAISING   zfloppy_fs_unsupp_operation
