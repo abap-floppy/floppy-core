@@ -1,24 +1,16 @@
 # :floppy_disk: floppy
 
-File System Abstraction Layer for ABAP
+A File System Abstraction Layer for ABAP
 
-:warning: Work In Progress
+> :warning: Work In Progress :warning:
 
-## Goals
+| Language Version | System Requirements | Dependencies |
+|------------------|---------------------|--------------|
+| `ABAP for Cloud Development`<br/> | `OnPremise SAP_BASIS >= 750` or<br/>`SAP S/4HANA Cloud` or<br/>`SAP BTP ABAP Environment` | `None` | 
 
-- Frontend and backend files with a common API
-- Streaming (for supported file systems)
-- Binary / Text access
-- For text
-  - Codepage / Encoding
-  - Line endings
-- Interfaces and test doubles to mock the file system
-- Reusable value helps and controls
-- Extensiblity for more file systems
+## Main goal
 
-## Requirements
-
-ABAP 7.50 or higher
+Define __one__ common API to __access files and folders__ on __multiple filesystems__ that works in __any ABAP runtime__ starting at ABAP 7.50 and is __released__ for tier 1 development.
 
 ## License
 
